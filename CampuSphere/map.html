@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Campus Navigation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+  <!-- Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  
+  <!-- Geocoder CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<meta charset="utf-8">
+  <title>Campus Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<body>
+    <style>
+  html, body, #map {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  
+  <!-- Routing Machine JS -->
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  
+  <!-- Geocoder JS -->
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <script>
+    // Init map
+    var map = L.map('map').setView([0, 0], 2);
+
+    // Add OSM tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    var userLocationMarker;
+    var routingControl;
+
+    // Locate user
+    map.locate({
+      setView: true,
+      maxZoom: 18,
+      watch: true,
+      enableHighAccuracy: true
+    });
+
+    map.on('locationfound', function(e) {
+      if (userLocationMarker) {
+        userLocationMarker.setLatLng(e.latlng);
+      } else {
+        userLocationMarker = L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
+      }
+    });
+
+    map.on('locationerror', function(e) {
+      alert("Location access denied or unavailable.");
+    });
+
+    // Add Search box
+    var geocoder = L.Control.geocoder({
+      defaultMarkGeocode: false
+    })
+    .on('markgeocode', function(e) {
+      var destLatLng = e.geocode.center;
+      
+      if (routingControl) {
+        map.removeControl(routingControl);
+      }
+
+      routingControl = L.Routing.control({
+        waypoints: [
+          userLocationMarker.getLatLng(),
+          destLatLng
+        ],
+        routeWhileDragging: true,
+        geocoder: L.Control.Geocoder.nominatim()
+      }).addTo(map);
+    })
+    .addTo(map);
+  
+
+
+
+</script>
+
+</body>
+</html>
