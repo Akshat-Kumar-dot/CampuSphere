@@ -1,105 +1,391 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Campus Navigation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <title>MUJ Campus Navigator — CampuSphere</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  
   <!-- Routing Machine CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-  
   <!-- Geocoder CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
   <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
     #map { height: 100vh; }
+
+    /* Controls box */
+    .controls {
+      position: absolute;
+      top: 14px;
+      left: 12px;
+      z-index: 1100;
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      border-radius: 10px;
+      padding: 12px;
+      width: 320px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-size: 14px;
+    }
+    .controls h3 { margin:0 0 8px; font-size:16px }
+    .controls label { display:block; margin-top:8px; font-weight:600; font-size:13px; }
+    .controls select, .controls button, .controls input {
+      width: 100%;
+      padding: 8px;
+      margin-top:6px;
+      border-radius:6px;
+      border:1px solid #ddd;
+      font-size:14px;
+      box-sizing:border-box;
+    }
+    .controls .row { display:flex; gap:8px; }
+    .controls .row button { flex:1; }
+    .notice { margin-top:8px; font-size:12px; color:#555; }
+
+    /* small legend */
+    .legend {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      z-index:1100;
+      background: rgba(255,255,255,0.98);
+      padding:10px;border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.12);
+      font-size:13px;
+    }
+    .legend div { margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+    .swatch { width:14px; height:14px; border-radius:3px; display:inline-block; }
   </style>
 </head>
-<meta charset="utf-8">
-  <title>Campus Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 <body>
-    <style>
-  html, body, #map {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-</style>
 
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
+  <div class="controls" id="controls">
+    <h3>MUJ Campus Navigator</h3>
+
+    <label for="start">Start</label>
+    <select id="start">
+      <option value="myLocation">📍 My Location</option>
+    </select>
+
+    <label for="end">Destination</label>
+    <select id="end">
+      <option value="">-- Select Destination --</option>
+    </select>
+
+    <div style="margin-top:8px;" class="row">
+      <button id="startByClick" title="Click anywhere on map to set start">Set Start by click</button>
+      <button id="endByClick" title="Click anywhere on map to set destination">Set End by click</button>
+    </div>
+
+    <div style="margin-top:8px;" class="row">
+      <button id="routeBtn" style="background:#f59e0b; color:white; border:none;">Show Path</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div style="margin-top:8px;" class="row">
+      <button id="locateBtn">Locate me</button>
+      <button id="swapBtn">Swap</button>
+    </div>
+
+    <div class="notice" id="notice">Tip: use dropdowns or "Set ... by click". If "My Location" is selected, give location permission.</div>
+  </div>
+
+  <div class="legend" id="legend">
+    <div><span class="swatch" style="background:#2b6cb0"></span> You</div>
+    <div><span class="swatch" style="background:green"></span> Start</div>
+    <div><span class="swatch" style="background:red"></span> Destination</div>
+    <div><span class="swatch" style="background:#f59e0b"></span> Route</div>
+  </div>
+
+  <!-- Dependencies -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  
-  <!-- Routing Machine JS -->
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-  
-  <!-- Geocoder JS -->
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <script>
-    // Init map
-    var map = L.map('map').setView([0, 0], 2);
+    // Wrap in DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Campus center: Manipal University Jaipur (approx)
+      const MUJ_CENTER = [26.8430, 75.5650];
 
-    // Add OSM tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(map);
+      // Create map
+      const map = L.map('map', { preferCanvas: false }).setView(MUJ_CENTER, 17);
 
-    var userLocationMarker;
-    var routingControl;
-
-    // Locate user
-    map.locate({
-      setView: true,
-      maxZoom: 18,
-      watch: true,
-      enableHighAccuracy: true
-    });
-
-    map.on('locationfound', function(e) {
-      if (userLocationMarker) {
-        userLocationMarker.setLatLng(e.latlng);
-      } else {
-        userLocationMarker = L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
-      }
-    });
-
-    map.on('locationerror', function(e) {
-      alert("Location access denied or unavailable.");
-    });
-
-    // Add Search box
-    var geocoder = L.Control.geocoder({
-      defaultMarkGeocode: false
-    })
-    .on('markgeocode', function(e) {
-      var destLatLng = e.geocode.center;
-      
-      if (routingControl) {
-        map.removeControl(routingControl);
-      }
-
-      routingControl = L.Routing.control({
-        waypoints: [
-          userLocationMarker.getLatLng(),
-          destLatLng
-        ],
-        routeWhileDragging: true,
-        geocoder: L.Control.Geocoder.nominatim()
+      // OSM tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: '© OpenStreetMap contributors'
       }).addTo(map);
-    })
-    .addTo(map);
-  
 
+      // Campus polygon (rough approximate boundary — edit as you like)
+      const campusPolygon = L.polygon([
+        [26.8452,75.5628],
+        [26.8452,75.5680],
+        [26.8415,75.5682],
+        [26.8402,75.5634],
+        [26.8421,75.5620]
+      ], { color: '#ffb84d', weight: 2, fillOpacity: 0.06 }).addTo(map).bindPopup('MUJ Campus (approx)');
 
+      // Key campus places
+      const PLACES = [
+        { id:'lib', name:'Central Library', coords:[26.8437,75.5654] },
+        { id:'hostel', name:'Hostel Block', coords:[26.8425,75.5665] },
+        { id:'lab', name:'Engineering Labs', coords:[26.8428,75.5645] },
+        { id:'cafeteria', name:'Cafeteria', coords:[26.8435,75.5638] },
+        { id:'admin', name:'Admin Block', coords:[26.8440,75.5658] },
+        // mentors/help points (example)
+        { id:'mentor1', name:'Asha (Mentor)', coords:[26.8450,75.5660], meta:'Mentor — Enrollment help' },
+        { id:'mentor2', name:'Ravi (Library Rep)', coords:[26.8439,75.5648], meta:'Mentor — Library orientation' }
+      ];
 
-</script>
+      // Layers
+      const placesLayer = L.layerGroup().addTo(map);
 
+      // add markers for places (clicking popup suggests open in start/end)
+      PLACES.forEach(p => {
+        const mk = L.marker(p.coords).addTo(placesLayer)
+          .bindPopup(`<b>${p.name}</b><div style="font-size:12px;color:#444;margin-top:6px">${p.meta ? p.meta : ''}</div>
+            <div style="margin-top:8px;">
+              <button onclick="window.__setStartFromMarker && window.__setStartFromMarker('${p.id}')" style="margin-right:6px;padding:6px;border-radius:6px;border:1px solid #ddd;">Use as Start</button>
+              <button onclick="window.__setEndFromMarker && window.__setEndFromMarker('${p.id}')" style="padding:6px;border-radius:6px;border:1px solid #ddd;">Use as End</button>
+            </div>`);
+      });
+
+      // Populate dropdowns with places
+      const startSel = document.getElementById('start');
+      const endSel = document.getElementById('end');
+      PLACES.forEach(p => {
+        const o1 = document.createElement('option'); o1.value = p.id; o1.text = p.name; startSel.appendChild(o1);
+        const o2 = document.createElement('option'); o2.value = p.id; o2.text = p.name; endSel.appendChild(o2);
+      });
+
+      // Markers for user / start / end
+      let userMarker = null;
+      let startMarker = null;
+      let endMarker = null;
+      let routingControl = null;
+
+      // small helper to create circle markers
+      function createCircleMarker(latlng, color, label){
+        const m = L.circleMarker(latlng, { radius: 8, color: color, fillColor: color, fillOpacity: 0.9 })
+          .bindTooltip(label, {permanent: true, direction: 'right', offset:[10,0]});
+        m.addTo(map);
+        return m;
+      }
+
+      // locate user initially (but don't fail if permission denied)
+      function locateUser(showPopup=true){
+        if(!navigator.geolocation){
+          console.log('Geolocation not supported');
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          const ll = [pos.coords.latitude, pos.coords.longitude];
+          if(userMarker){
+            userMarker.setLatLng(ll);
+          } else {
+            userMarker = L.marker(ll).addTo(map).bindPopup('You are here');
+          }
+          if(showPopup && userMarker.getPopup) userMarker.openPopup();
+        }, err => {
+          console.log('Location error:', err.message);
+        }, { enableHighAccuracy:true, timeout:8000 });
+      }
+
+      // call once at start (non-intrusive)
+      locateUser(false);
+
+      // Map click set mode
+      let clickMode = null; // null | 'start' | 'end'
+      const startByClickBtn = document.getElementById('startByClick');
+      const endByClickBtn = document.getElementById('endByClick');
+
+      function setClickMode(mode){
+        clickMode = mode;
+        startByClickBtn.style.background = mode === 'start' ? '#e6f6ea' : '';
+        endByClickBtn.style.background = mode === 'end' ? '#ffecec' : '';
+        document.getElementById('notice').innerText = mode ? `Click on the map to set ${mode}.` : 'Tip: use dropdowns or "Set ... by click".';
+      }
+
+      startByClickBtn.addEventListener('click', ()=> setClickMode(clickMode === 'start' ? null : 'start'));
+      endByClickBtn.addEventListener('click', ()=> setClickMode(clickMode === 'end' ? null : 'end'));
+
+      // Global setter used by place popup buttons
+      window.__setStartFromMarker = (placeId) => {
+        setDropdownToPlace('start', placeId);
+      };
+      window.__setEndFromMarker = (placeId) => {
+        setDropdownToPlace('end', placeId);
+      };
+
+      function setDropdownToPlace(which, placeId){
+        const sel = which === 'start' ? startSel : endSel;
+        sel.value = placeId;
+        // set marker as well
+        const p = PLACES.find(pp => pp.id === placeId);
+        const coords = p.coords;
+        if(which === 'start'){
+          if(startMarker) startMarker.setLatLng(coords);
+          else startMarker = createCircleMarker(coords, 'green', 'Start');
+        } else {
+          if(endMarker) endMarker.setLatLng(coords);
+          else endMarker = createCircleMarker(coords, 'red', 'Destination');
+        }
+      }
+
+      // handle map clicks
+      map.on('click', (e) => {
+        if(!clickMode) return;
+        const coords = [e.latlng.lat, e.latlng.lng];
+        if(clickMode === 'start'){
+          // set start marker and set dropdown to custom 'customStart'
+          if(startMarker) startMarker.setLatLng(coords);
+          else startMarker = createCircleMarker(coords, 'green', 'Start');
+          // update select to a special value 'custom:start' (clear other selections)
+          startSel.value = 'myLocation'; // keep dropdown in sync (we keep 'myLocation' or place IDs) — custom coords are represented by marker not select
+        } else if(clickMode === 'end'){
+          if(endMarker) endMarker.setLatLng(coords);
+          else endMarker = createCircleMarker(coords, 'red', 'Destination');
+          endSel.value = ''; // set to empty since it's a custom point
+        }
+        // turn click mode off after set
+        setClickMode(null);
+      });
+
+      // geocoder (search box on map)
+      const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+      }).addTo(map);
+
+      // When user selects a geocoder result, set it as destination and draw route from user (if available)
+      geocoder.on('markgeocode', function(ev) {
+        const dest = ev.geocode.center; // a LatLng
+        if(endMarker) endMarker.setLatLng(dest);
+        else endMarker = createCircleMarker(dest, 'red', 'Destination');
+
+        // attempt to route from user if present; otherwise just center
+        if(userMarker){
+          drawRoute(userMarker.getLatLng(), dest);
+        } else {
+          map.setView(dest, 18);
+        }
+      });
+
+      // Buttons
+      document.getElementById('locateBtn').addEventListener('click', () => locateUser(true));
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        if(routingControl){ map.removeControl(routingControl); routingControl = null; }
+        if(startMarker){ map.removeLayer(startMarker); startMarker = null; }
+        if(endMarker){ map.removeLayer(endMarker); endMarker = null; }
+        startSel.value = 'myLocation';
+        endSel.value = '';
+      });
+
+      document.getElementById('swapBtn').addEventListener('click', () => {
+        // swap dropdown selections & markers
+        const sVal = startSel.value;
+        const eVal = endSel.value;
+        startSel.value = eVal || 'myLocation';
+        endSel.value = sVal === 'myLocation' ? '' : sVal;
+
+        const tmp = startMarker;
+        startMarker = endMarker;
+        endMarker = tmp;
+      });
+
+      // route builder
+      function drawRoute(startLatLng, endLatLng){
+        if(!startLatLng || !endLatLng){
+          alert('Start or destination not set');
+          return;
+        }
+        // remove old route
+        if(routingControl) { map.removeControl(routingControl); routingControl = null; }
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(startLatLng.lat ?? startLatLng[0], startLatLng.lng ?? startLatLng[1]),
+            L.latLng(endLatLng.lat ?? endLatLng[0], endLatLng.lng ?? endLatLng[1])
+          ],
+          showAlternatives: false,
+          routeWhileDragging: false,
+          lineOptions: { styles: [{ color: '#f59e0b', opacity: 0.95, weight: 6 }] },
+          createMarker: function(i, wp, nWps) {
+            // don't create default markers for route (we use our own)
+            return L.marker(wp.latLng);
+          }
+        }).addTo(map);
+      }
+
+      // Show Path button logic (choose coordinates from dropdowns or markers)
+      document.getElementById('routeBtn').addEventListener('click', () => {
+        // Resolve start
+        let startCoordsPromise = new Promise((resolve, reject) => {
+          const sVal = startSel.value;
+          if(sVal === 'myLocation'){
+            // prefer the user marker if available, otherwise request location
+            if(userMarker){
+              resolve(userMarker.getLatLng());
+            } else {
+              // try to get location now
+              if(!navigator.geolocation) { alert('Geolocation unsupported'); reject('no geo'); return; }
+              navigator.geolocation.getCurrentPosition(pos => {
+                const ll = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                if(userMarker) userMarker.setLatLng(ll); else userMarker = L.marker(ll).addTo(map).bindPopup('You are here');
+                resolve(ll);
+              }, err => {
+                alert('Unable to get current location. Choose another start point.');
+                reject(err);
+              }, {enableHighAccuracy:true, timeout:8000});
+            }
+          } else if (sVal) {
+            // place id
+            const p = PLACES.find(pp => pp.id === sVal);
+            if(p) resolve({ lat: p.coords[0], lng: p.coords[1] });
+            else reject('start unknown');
+          } else if(startMarker) {
+            resolve(startMarker.getLatLng());
+          } else {
+            reject('no start');
+          }
+        });
+
+        // Resolve end
+        let endCoordsPromise = new Promise((resolve, reject) => {
+          const eVal = endSel.value;
+          if(eVal) {
+            const p = PLACES.find(pp => pp.id === eVal);
+            if(p) resolve({ lat: p.coords[0], lng: p.coords[1] });
+            else reject('end unknown');
+          } else if(endMarker) {
+            resolve(endMarker.getLatLng());
+          } else {
+            alert('Set a destination (dropdown, click, or search).');
+            reject('no end');
+          }
+        });
+
+        // When both resolved, draw route
+        Promise.all([startCoordsPromise, endCoordsPromise]).then(vals => {
+          const start = vals[0], end = vals[1];
+          // ensure markers show
+          if(startMarker) startMarker.setLatLng([start.lat, start.lng]); else startMarker = createCircleMarker([start.lat, start.lng], 'green', 'Start');
+          if(endMarker) endMarker.setLatLng([end.lat, end.lng]); else endMarker = createCircleMarker([end.lat, end.lng], 'red', 'Destination');
+          drawRoute(start, end);
+        }).catch(err=>{
+          console.log('Route aborted:', err);
+        });
+      });
+
+      // Ensure map is centered on campus on load
+      map.once('load', ()=> map.setView(MUJ_CENTER, 17));
+      // If the browser doesn't fire load event for tiles, still set view
+      map.setView(MUJ_CENTER, 17);
+
+    }); // end DOMContentLoaded
+  </script>
 </body>
 </html>
