@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your First Week - CampuSphere</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-yellow-600 text-white py-6 shadow-md">
+    <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+      <h1 class="text-3xl font-bold">Your First Week</h1>
+      <a href="index.html" class="bg-white text-yellow-700 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-200">
+        Back Home
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-12 bg-yellow-50 relative" style="background-image: url('https://websiteupload.s3.ap-south-1.amazonaws.com/2024/05/manipal-uni.jpg'); background-size: cover; background-position: center 25%;">
+    <div class="absolute inset-0 bg-yellow-900 opacity-70"></div>
+    <div class="relative z-10">
+      <h2 class="text-4xl font-extrabold text-white">A Guided Pathway</h2>
+      <p class="mt-4 text-lg max-w-2xl mx-auto text-white">
+        Navigate your first days on campus, from enrollment to finding your first class. 
+        Follow these simple steps to settle in quickly and confidently.
+      </p>
+      <!-- Anchor instead of button -->
+      <a href="fw.html" class="mt-6 inline-block bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-full font-semibold">
+        🚀 Start Pathway
+      </a>
+    </div>
+  </section>
+
+  <!-- Steps Section -->
+  <section class="max-w-6xl mx-auto px-6 py-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+    
+    <a href="wo.html" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">1. Welcome & Orientation</h3>
+      <p class="mt-2 text-gray-600">Join orientation sessions, collect your ID card, and get to know your batchmates.</p>
+    </a>
+
+    <a href="fw.html#step2" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">2. Enrollment & Registration</h3>
+      <p class="mt-2 text-gray-600">Complete academic registration, hostel check-in, and set up your university portal.</p>
+    </a>
+
+    <a href="fw.html#step3" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">3. Campus Essentials</h3>
+      <p class="mt-2 text-gray-600">Learn how to use the library, computer labs, and Wi-Fi setup across campus.</p>
+    </a>
+
+    <a href="fw.html#step4" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">4. Hostel Life</h3>
+      <p class="mt-2 text-gray-600">Understand hostel rules, dining options, laundry, and safety guidelines.</p>
+    </a>
+
+    <a href="fw.html#step5" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">5. Finding Your Classes</h3>
+      <p class="mt-2 text-gray-600">Use the campus map to locate your classrooms and discover shortcut routes.</p>
+    </a>
+
+    <a href="ss.html" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">6. Safety & Support</h3>
+      <p class="mt-2 text-gray-600">Keep emergency contacts handy and know where the medical & security offices are.</p>
+    </a>
+
+    <a href="fw.html#step7" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">7. Campus Culture & Hacks</h3>
+      <p class="mt-2 text-gray-600">Explore clubs, societies, sports facilities, and tips from seniors.</p>
+    </a>
+
+    <!-- New Step 8 -->
+    <a href="fw.html#step8" class="block bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform no-underline text-current">
+      <h3 class="text-xl font-bold text-yellow-700">8. Quizzes, Midterms & End-Terms</h3>
+      <p class="mt-2 text-gray-600">Stay on top of continuous assessments, prepare for midterms, and understand end-term exam rules.</p>
+    </a>
+
+    <!-- Checklist card becomes Step 9 -->
+    <div class="bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition transform">
+      <h3 class="text-xl font-bold text-yellow-700">9. First Week Checklist</h3>
+      <ul class="list-none text-gray-600 mt-2 space-y-2">
+        <li class="flex items-center">
+          <input type="checkbox" id="id-card" class="mr-2">
+          <label for="id-card">Collected ID Card</label>
+        </li>
+        <li class="flex items-center">
+          <input type="checkbox" id="reg-classes" class="mr-2">
+          <label for="reg-classes">Registered for Classes</label>
+        </li>
+        <li class="flex items-center">
+          <input type="checkbox" id="hostel-mess" class="mr-2">
+          <label for="hostel-mess">Located Hostel &amp; Mess</label>
+        </li>
+        <li class="flex items-center">
+          <input type="checkbox" id="library-labs" class="mr-2">
+          <label for="library-labs">Visited Library &amp; Labs</label>
+        </li>
+      </ul>
+      <!-- Completion message -->
+      <p id="checklist-status" class="mt-4 text-green-600 font-semibold hidden">
+        ✅ Checklist complete!
+      </p>
+    </div>
+
+  </section>
+
+  <!-- Closing Section -->
+  <section class="bg-yellow-600 text-white py-12 text-center">
+    <h2 class="text-3xl font-bold">Congrats, You’re All Set! 🎉</h2>
+    <p class="mt-4 text-lg">You’ve completed your first week onboarding. Explore more with CampuSphere.</p>
+    <a href="explore.html" class="mt-6 inline-block bg-white text-yellow-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-100">
+      Explore Campus Locations →
+    </a>
+  </section>
+
+  <!-- Script for checklist -->
+  <script>
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const statusMsg = document.getElementById('checklist-status');
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const allChecked = Array.from(checkboxes).every(box => box.checked);
+        if (allChecked) {
+          statusMsg.classList.remove('hidden');
+        } else {
+          statusMsg.classList.add('hidden');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

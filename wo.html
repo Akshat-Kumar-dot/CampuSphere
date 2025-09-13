@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome & Orientation - CampuSphere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .image-container {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <header class="bg-yellow-600 text-white py-6 shadow-md">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold">Welcome & Orientation</h1>
+            <a href="fw.html" class="bg-white text-yellow-700 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-200">
+                Back to Pathway
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <div class="bg-white shadow-lg rounded-xl p-8 md:p-12">
+            <h2 class="text-3xl font-bold text-yellow-700 mb-4">Step 1: Welcome & Orientation</h2>
+            <p class="text-lg text-gray-600 mb-8">
+                Your journey begins here! Orientation is designed to help you transition smoothly into university life. It's a great opportunity to get acquainted with the campus, your new classmates, and the support systems available to you.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold text-yellow-800 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Orientation Sessions
+                    </h3>
+                    <p class="text-gray-600">Attend mandatory sessions to learn about university policies, academic expectations, and campus resources. These sessions are crucial for a successful start.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold text-yellow-800 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-6 5h5m-5 4h5" />
+                        </svg>
+                        Collect Your ID Card
+                    </h3>
+                    <p class="text-gray-600">Your student ID is your key to campus. It grants you access to the library, labs, and other facilities. Be sure to pick it up at the designated location.</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-yellow-700 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292m0 0a4 4 0 100 5.292m0-5.292a4 4 0 110 5.292M14 12a2 2 0 10-4 0h4zm-5 4a3 3 0 10-6 0h6zm8 0a3 3 0 10-6 0h6z" />
+                    </svg>
+                    Connect with Your Peers
+                </h3>
+                <p class="text-gray-600">
+                    Orientation isn't just about administrative tasks; it's about building your community. Strike up conversations with your new batchmates, participate in group activities, and start creating lasting friendships.
+                </p>
+            </div>
+            
+            <div class="bg-yellow-50 p-8 rounded-xl border-dashed border-2 border-yellow-300 text-center mb-8">
+                <h3 class="text-2xl font-bold text-yellow-700 mb-4">Orientation Memories 📸</h3>
+                <p class="text-gray-600 mb-4">Browse through some moments from previous orientation weeks!</p>
+                
+                <div id="image-slider" class="relative w-full max-w-xl mx-auto mt-4 rounded-lg overflow-hidden">
+                    <div id="image-preview" class="flex transition-transform duration-300 ease-in-out">
+                        <img src="n.jpg" alt="Campus Event" class="image-container">
+                        <img src="c.jpg" alt="Orientation Day" class="image-container">
+                        <img src="om.jpg" alt="Getting ID Card" class="image-container">
+                        <img src="https://placehold.co/600x400/F5DEB3/FFD700?text=Group+Activity" alt="Group Activity" class="image-container">
+                        <img src="https://placehold.co/600x400/FFDEAD/FFD700?text=Meet+and+Greet" alt="Meet and Greet" class="image-container">
+                    </div>
+
+                    <button id="prev-btn" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 p-2 rounded-full hover:bg-opacity-75 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button id="next-btn" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 p-2 rounded-full hover:bg-opacity-75 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="your-first-week.html#step2" class="inline-block bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-4 rounded-full font-semibold transition-colors">
+                    Next Step: Enrollment & Registration →
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-200 text-gray-600 py-6 mt-12 text-center">
+        <p>&copy; 2025 CampuSphere. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const imagePreview = document.getElementById('image-preview');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        const images = document.querySelectorAll('#image-preview img');
+        let currentIndex = 0;
+
+        function updateSlider() {
+            const offset = -currentIndex * 100;
+            imagePreview.style.transform = `translateX(${offset}%)`;
+
+            // Disable/enable buttons at start/end
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === images.length - 1;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlider();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                updateSlider();
+            }
+        });
+
+        // Initial update to set the state of the buttons
+        updateSlider();
+    </script>
+
+</body>
+</html>

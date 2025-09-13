@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampuSphere | Freshers' Onboarding</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .logo-group:hover img {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+        .logo-group:hover h1 {
+            color: #fcd34d; /* yellow-400 */
+            transition: color 0.3s ease;
+        }
+        .nav-link-glow:hover {
+            transform: scale(1.05);
+            background-color: #facc15; /* yellow-400 */
+            color: #000;
+        }
+        .nav-link-glow {
+            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Main container for the entire page -->
+    <div class="relative w-full">
+        
+        <!-- Header section with logo and navigation -->
+        <header class="bg-yellow-50 shadow-md flex justify-between items-center w-full px-8 py-4 sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+      <img src="Screenshot 2025-09-10 132615.png" alt="CampuSphere" class="w-12 h-12 object-contain" />
+      <div>
+        <h1 class="text-2xl font-bold">CampuSphere</h1>
+        <div class="text-xs text-gray-500">MUJ Campus Guide + SLMs</div>
+      </div>
+    </div>
+            <nav class="flex items-center space-x-6">
+                <a href="#slms" class="nav-link-glow px-4 py-2 border border-yellow-600 text-yellow-600 rounded-full text-sm font-semibold">SLMs</a>
+                <a href="#mentors" class="nav-link-glow px-4 py-2 border border-yellow-600 text-yellow-600 rounded-full text-sm font-semibold">Mentors</a>
+                <a href="map.html" class="nav-link-glow px-4 py-2 border border-yellow-600 text-yellow-600 rounded-full text-sm font-semibold">Map</a>
+                <a href="#footer" class="nav-link-glow px-4 py-2 border border-yellow-600 text-yellow-600 rounded-full text-sm font-semibold">FAQ</a>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative bg-yellow-700 text-white flex items-center justify-center p-12 min-h-screen" style="background-image: url('https://websiteupload.s3.ap-south-1.amazonaws.com/2024/05/manipal-uni.jpg'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-yellow-900 opacity-70"></div>
+            <div class="relative z-10 text-center max-w-4xl mx-auto">
+                <h2 class="text-5xl font-extrabold leading-tight">Your Onboarding Guide for Campus Life</h2>
+                <p class="mt-4 text-lg">Your intelligent companion to master campus life. Learn systems, find help, and explore with ease.</p>
+                <div class="mt-8 flex justify-center">
+                    <div class="flex w-full max-w-md bg-white rounded-full overflow-hidden shadow-xl">
+                        <input type="text" placeholder="Ask about campus rules, locations, etc..." class="flex-grow px-6 py-3 text-gray-900 outline-none">
+                        <button class="bg-yellow-600 text-white px-6 py-3 font-semibold hover:bg-yellow-700 transition-colors duration-200"></button>
+                    </div>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-xl p-4 transition-transform transform hover:scale-105 duration-300">
+                        <p class="text-3xl font-bold">50+</p>
+                        <p class="text-sm">Learning Modules</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-xl p-4 transition-transform transform hover:scale-105 duration-300">
+                        <p class="text-3xl font-bold">24/7</p>
+                        <p class="text-sm">AI Assistance</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-xl p-4 transition-transform transform hover:scale-105 duration-300">
+                        <p class="text-3xl font-bold">100+</p>
+                        <p class="text-sm">Campus Hacks</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Structured Learning Modules (SLMs) Section -->
+        <section id="slms" class="bg-gray-100 py-16 px-8">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center">Structured Learning Modules (SLMs)</h2>
+                <p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">Short, interactive lessons to get you up to speed with campus life.</p>
+                
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- First Week Pathway -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform card-hover transform duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-blue-100 rounded-lg text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10-4.48-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold" >Your First Week  </h3>
+                        </div>
+                        <p class="text-sm text-gray-600">A guided pathway to navigate your first days on campus, from enrollment to finding your first class.</p>
+                        <button class="mt-6 w-full bg-blue-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-300" onclick="window.location.href='fw.html'">
+                                Start Pathway 
+                            
+                    </button>
+                    </div>
+
+                    <!-- Library Usage -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform card-hover transform duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-green-100 rounded-lg text-green-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22 19v-14h-18c-1.104 0-2 .896-2 2v14h2v-12h18v12h-2zm-12 0h-2v-10h2v10zM14 19h-2v-10h2v10zM18 19h-2v-10h2v10zM12 2c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold">Explore Library</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">A short module on how to use the campus library system, from finding a book to booking a study room.</p>
+                        <button class="mt-6 w-full bg-green-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-green-700 transition-colors duration-300">
+                            Take Module
+                        </button>
+                    </div>
+
+                    <!-- Exams and Quizzes -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform card-hover transform duration-300">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="p-3 bg-red-100 rounded-lg text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10-4.48-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-15c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 10c-3.87 0-7 2.13-7 5v2h14v-2c0-2.87-3.13-5-7-5z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold">Exams and Quizes</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">A quick interactive quiz to test your knowledge on the key academic rules and regulations.</p>
+                        <button class="mt-6 w-full bg-red-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-700 transition-colors duration-300">
+                            Explore
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mentors & Campus Hacks Section -->
+        <section id="mentors" class="bg-yellow-50 py-16 px-8">
+            <div class="max-w-6xl mx-auto text-center">
+                <h2 class="text-4xl font-bold">Connect & Learn</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">Get help from experienced students and find clever campus hacks.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Mentors -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform card-hover transform duration-300">
+                        <h3 class="text-2xl font-bold">Mentor Micro-sessions</h3>
+                        <p class="mt-2 text-gray-600">Book a quick chat with a senior student to get personalized advice on academics, clubs, and more.</p>
+                        <button class="mt-6 w-full bg-yellow-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-yellow-700 transition-colors duration-300">
+                            Find a Mentor
+                        </button>
+                    </div>
+                    <!-- Campus Hacks -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform card-hover transform duration-300">
+                        <h3 class="text-2xl font-bold">Peer-Contributed Campus Hacks</h3>
+                        <p class="mt-2 text-gray-600">Discover and share insider tips, shortcuts, and useful advice from other students.</p>
+                        <button class="mt-6 w-full bg-yellow-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-yellow-700 transition-colors duration-300">
+                            Explore Hacks
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explore Campus Locations Section -->
+        <section id="locations" class="bg-gray-100 py-16 px-8">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center">Explore Campus Locations</h2>
+                <p class="mt-4 text-lg text-gray-600 text-center max-w-3xl mx-auto">Discover all the facilities and amenities MUJ campus has to offer, organized by category for easy navigation.</p>
+                
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Academic Blocks -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-yellow-100 rounded-lg text-yellow-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 12h-1c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2v-8h-2zM5 12c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2v-8H5zM12 0c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2s2-.9 2-2V2c0-1.1-.9-2-2-2zM5 2c0-1.1.9-2 2-2h1.5v4H5V2zM17 2h1.5c1.1 0 2 .9 2 2v2h-3V2zM12 8c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2s2-.9 2-2V10c0-1.1-.9-2-2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold">Academic Blocks</h3>
+                            </div>
+                            <span class="text-gray-500 text-sm">12 locations</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Lecture halls, laboratories, and department offices</p>
+                        <ul class="mt-4 text-gray-700 list-disc list-inside">
+                            <li><a href="map.html?loc=boys_hostel_a" class="hover:underline text-yellow-700">Engineering Block</a></li>
+  <li><a href="map.html?loc=girls_hostel_b" class="hover:underline text-yellow-700">Dome Building</a></li>
+  <li><a href="map.html?loc=faculty_quarters" class="hover:underline text-yellow-700">Library</a></li>
+  <li><a href="map.html?loc=guest_house" class="hover:underline text-yellow-700">Computer Center</a></li>
+
+
+                        </ul>
+                        <a href="map.html" class="mt-6 inline-block text-yellow-600 font-semibold hover:underline">
+                            View All Locations &rarr;
+                        </a>
+                    </div>
+
+                    <!-- Hostels & Accommodation -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-yellow-100 rounded-lg text-yellow-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2zm0 2.94l6.06 6.06h-2.12c-.55 0-1-.45-1-1v-4h-5v4c0 .55-.45 1-1 1h-2.12L12 4.94z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold">Hostels & Accommodation</h3>
+                            </div>
+                            <span class="text-gray-500 text-sm">8 locations</span>
+                      <!-- Student residential facilities and guest houses -->
+</div>
+                      <p class="text-sm text-gray-600">Student residential facilities and guest houses</p>
+<ul class="mt-4 text-gray-700 list-disc list-inside">
+  <li><a href="map.html?loc=boys_hostel_a" class="hover:underline text-yellow-700">Boys Hostel A</a></li>
+  <li><a href="map.html?loc=girls_hostel_b" class="hover:underline text-yellow-700">Girls Hostel B</a></li>
+  <li><a href="map.html?loc=faculty_quarters" class="hover:underline text-yellow-700">Faculty Quarters</a></li>
+  <li><a href="map.html?loc=guest_house" class="hover:underline text-yellow-700">Guest House</a></li>
+</ul>
+
+<a href="map.html" class="mt-6 inline-block text-yellow-600 font-semibold hover:underline">
+  View All Locations &rarr;
+</a>
+</div>
+                    
+                    <!-- Dining & Food Courts -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-yellow-100 rounded-lg text-yellow-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M21 15v-2h-2v2h-2v-2h-2v2h-2v-2h-2v2h-2v-2h-2v2h-1c-1.1 0-2 .9-2 2v6h22v-6c0-1.1-.9-2-2-2zM7 8c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5S10.88 5.5 9.5 5.5 7 6.62 7 8zM19 8c0 1.38-1.12 2.5-2.5 2.5S14 9.38 14 8s1.12-2.5 2.5-2.5S19 6.62 19 8z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold">Dining & Food Courts</h3>
+                            </div>
+                            <span class="text-gray-500 text-sm">6 locations</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Mess halls, cafeterias, and food outlets</p>
+                        <ul class="mt-4 text-gray-700 list-disc list-inside">
+                            <li><a href="map.html?loc=boys_hostel_a" class="hover:underline text-yellow-700">Main Mess</a></li>
+                        
+  <li><a href="map.html?loc=girls_hostel_b" class="hover:underline text-yellow-700">Food Court</a></li>
+  <li><a href="map.html?loc=faculty_quarters" class="hover:underline text-yellow-700">Café Hub</a></li>
+  <li><a href="map.html?loc=guest_house" class="hover:underline text-yellow-700">Night Canteen</a></li>
+
+                        </ul>
+                        <a href="map.html" class="mt-6 inline-block text-yellow-600 font-semibold hover:underline">
+                            View All Locations &rarr;
+                        </a>
+                    </div>
+
+                    <!-- Sports & Recreation -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-yellow-100 rounded-lg text-yellow-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-8 4v2c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-2H4z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold">Sports & Recreation</h3>
+                            </div>
+                            <span class="text-gray-500 text-sm">10 locations</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Gymnasium, sports complex, and recreational facilities</p>
+                        <ul class="mt-4 text-gray-700 list-disc list-inside">
+                            <li><a href="map.html?loc=boys_hostel_a" class="hover:underline text-yellow-700">Gymnasium</a></li>
+                        
+  <li><a href="map.html?loc=girls_hostel_b" class="hover:underline text-yellow-700">Badminton Courts</a></li>
+  <li><a href="map.html?loc=faculty_quarters" class="hover:underline text-yellow-700">Cricket Ground</a></li>
+  <li><a href="map.html?loc=guest_house" class="hover:underline text-yellow-700">Tennis and Squash courts</a></li>
+  <li><a href="map.html?loc=faculty_quarters" class="hover:underline text-yellow-700">Volleyball courts</a></li>
+  <li><a href="map.html?loc=guest_house" class="hover:underline text-yellow-700">Basketball courts</a></li>
+                        </ul>
+                        <a href="map.html" class="mt-6 inline-block text-yellow-600 font-semibold hover:underline">
+                            View All Locations &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Section -->
+        <footer id ="footer" class="bg-gray-900 text-gray-300 py-12 px-8">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo and tagline -->
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://placehold.co/32x32/1f2937/d1d5db?text=CS" alt="CampuSphere Logo" class="h-8 w-8">
+                        <h3 class="text-2xl font-bold text-white">CampuSphere</h3>
+                    </div>
+                    <p class="mt-2 text-sm">Your intelligent campus companion for navigating Manipal University Jaipur with ease and efficiency.</p>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="https://www.instagram.com/jaipurmanipal/?hl=en" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07c1.474.067 2.457.309 3.01.523.565.228.988.498 1.488.998s.77.923.998 1.488c.214.553.456 1.536.523 3.01.058 1.266.07 1.647.07 4.85s-.012 3.584-.07 4.85c-.067 1.474-.309 2.457-.523 3.01-.228.565-.498.988-.998 1.488s-.923.77-1.488.998c-.553.214-1.536.456-3.01.523-1.266.058-1.647.07-4.85.07zm0-2.163c-3.268 0-3.693.012-4.996.07c-1.643.075-2.738.322-3.695.698-1.025.41-1.84.97-2.798 1.928s-1.518 1.773-1.928 2.798c-.376.957-.623 2.052-.698 3.695-.058 1.303-.07 1.728-.07 4.996s.012 3.693.07 4.996c.075 1.643.322 2.738.698 3.695.41 1.025.97 1.84 1.928 2.798s1.773 1.518 2.798 1.928c.957.376 2.052.623 3.695.698 1.303.058 1.728.07 4.996.07s3.693-.012 4.996-.07c1.643-.075 2.738-.322 3.695-.698 1.025-.41 1.84-.97 2.798-1.928s1.518-1.773 1.928-2.798c.376-.957.623-2.052.698-3.695.058-1.303.07-1.728.07-4.996s-.012-3.693-.07-4.996c-.075-1.643-.322-2.738-.698-3.695-.41-1.025-.97-1.84-1.928-2.798s-1.773-1.518-2.798-1.928c-.957-.376-2.052-.623-3.695-.698-1.303-.058-1.728-.07-4.996-.07zM12 6.865c-2.825 0-5.135 2.31-5.135 5.135s2.31 5.135 5.135 5.135 5.135-2.31 5.135-5.135-2.31-5.135-5.135-5.135zm0 8.293c-1.748 0-3.158-1.41-3.158-3.158s1.41-3.158 3.158-3.158 3.158 1.41 3.158 3.158-1.41 3.158-3.158 3.158zm4.331-5.107c-.45 0-.814.364-.814.814s.364.814.814.814.814-.364.814-.814-.364-.814-.814-.814z"/>
+                            </svg>
+                        </a>
+                        <a href="https://in.linkedin.com/school/manipal-university-jaipur/people" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.763s.784-1.763 1.75-1.763 1.75.79 1.75 1.763-.783 1.763-1.75 1.763zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.793 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                        <a href="https://jaipur.manipal.edu/" class="text-gray-400 hover:text-white transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2c-5.523 0-10 4.385-10 9.81s4.477 9.81 10 9.81c5.523 0 10-4.385 10-9.81s-4.477-9.81-10-9.81zm-2.88 15.65c-1.396-1.597-2.247-3.714-2.247-6.04s.851-4.443 2.247-6.04l.115.115c.957 1.096 1.545 2.502 1.545 4.025s-.588 2.929-1.545 4.025l-.115.115z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-xl font-semibold text-white">Quick Links</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Campus Map</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">All Locations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Get Directions</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Campus Events</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Emergency Contacts</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Us -->
+                <div>
+                    <h4 class="text-xl font-semibold text-white">Contact Us</h4>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li class="flex items-start space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>Manipal University Jaipur, Dehmi-Kalan, Jaipur, Rajasthan</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.5l1.5 5.5-3 1.5c.3 1.2.9 2.3 1.8 3.2s2 1.5 3.2 1.8l1.5-3 5.5 1.5V19a2 2 0 01-2 2h-12a2 2 0 01-2-2v-12z" />
+                            </svg>
+                            <span>+91 141 999 4000</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>info@navigo.muj.edu</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Stay Updated -->
+                <div>
+                    <h4 class="text-xl font-semibold text-white">Stay Updated</h4>
+                    <p class="mt-4 text-sm">Subscribe to our newsletter for the latest updates.</p>
+                    <div class="mt-4 flex">
+                        <input type="email" placeholder="Your email" class="flex-grow p-2 rounded-l-md text-gray-900 border-none outline-none">
+                        <button class="bg-yellow-600 text-white px-4 py-2 rounded-r-md font-semibold hover:bg-yellow-700 transition-colors duration-200">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm">
+                © 2025 NaviGo - MUJ Campus Guide. Built for Turing Sapiens Hackathon.
+            </div>
+            <div class="mt-2 text-center text-xs">
+                <a href="#" class="hover:underline">Privacy Policy</a> | 
+                <a href="#" class="hover:underline">Terms of Service</a> | 
+                <a href="#" class="hover:underline">Support</a>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>
+
+

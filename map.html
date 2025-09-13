@@ -1,0 +1,554 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CampuSphere — MUJ Navigator (Search → Destination)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <style>
+    html,body,#map{height:100%;margin:0;padding:0}
+    #map{height:100vh}
+    .searchbar{
+      position:absolute;left:12px;top:12px;z-index:1300;
+      width:360px;font-family:system-ui,Segoe UI,Roboto,Arial;
+    }
+    .searchbar input{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,0.06);
+      font-size:14px;
+    }
+    .suggestions{
+      background:white; border:1px solid #e5e7eb; border-top:0; border-radius:0 0 8px 8px; max-height:260px; overflow:auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .suggest-item{ padding:10px 12px; cursor:pointer; font-size:14px; }
+    .suggest-item:hover, .suggest-item.active { background:#f3f4f6; }
+    .controls{
+      position:absolute;left:12px;top:80px;z-index:1200;
+      background:rgba(255,255,255,0.98);padding:12px;border-radius:8px;
+      width:340px;box-shadow:0 6px 18px rgba(0,0,0,0.12);font-family:system-ui,Segoe UI,Roboto,Arial
+    }
+    .controls h3{margin:0 0 8px;font-size:16px}
+    .controls label{display:block;margin-top:8px;font-weight:600;font-size:13px}
+    .controls select,.controls button,.controls input{width:100%;margin-top:6px;padding:8px;border-radius:6px;border:1px solid #ddd;font-size:14px;box-sizing:border-box}
+    .row{display:flex;gap:8px;margin-top:8px}
+    .row button{flex:1}
+    .hint{font-size:13px;color:#444;margin-top:8px}
+    .status{font-size:13px;color:#1f2937;margin-top:8px}
+    .legend{position:absolute;right:12px;top:12px;z-index:1200;background:rgba(255,255,255,0.98);padding:10px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.12);font-size:13px}
+    .legend .item{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .sw{width:14px;height:14px;border-radius:3px;display:inline-block}
+    .cs-popup img{ width:100%; height:120px; object-fit:cover; border-radius:6px; display:block; margin-bottom:8px; }
+    @media (max-width:900px) { .controls{ width:90%; left:5%; top:120px } .searchbar{width:90%;left:5%;} }
+  </style>
+</head>
+<body>
+  <div class="searchbar">
+    <input id="globalSearch" placeholder="Search place (e.g. 'AB 1') or paste coords '26.842429,75.564989'">
+    <div id="suggestions" class="suggestions" style="display:none"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="controls" id="controls">
+    <h3>CampuSphere — MUJ Navigator</h3>
+
+    <label>Start</label>
+    <select id="start"><option value="myLocation">📍 My Location</option></select>
+
+    <label>Destination</label>
+    <select id="end"><option value="">-- Select --</option></select>
+
+    <div class="row">
+      <button id="setStart">Set Start by Click</button>
+      <button id="setEnd">Set End by Click</button>
+    </div>
+
+    <div class="row">
+      <button id="routeBtn" style="background:#f59e0b;color:white;border:none;">Show Path</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <button id="locateBtn">📍 Locate Me</button>
+      <button id="swapBtn">Swap</button>
+    </div>
+
+    <div class="status" id="status">Status: ready</div>
+    <div class="hint">Tip: click a suggestion to set it as Destination and automatically route (if Start is set).</div>
+  </div>
+
+  <div class="legend" id="legend">
+    <div class="item"><span class="sw" style="background:#2b6cb0"></span> You</div>
+    <div class="item"><span class="sw" style="background:green"></span> Start</div>
+    <div class="item"><span class="sw" style="background:red"></span> Destination</div>
+    <div class="item"><span class="sw" style="background:#f59e0b"></span> Route</div>
+  </div>
+
+  <!-- libs -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+  <script>
+  (function(){
+    // ---------- Config ----------
+    const MUJ_CENTER = [26.8430, 75.5650];
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    // ---------- Map ----------
+    const map = L.map('map', { preferCanvas: false }).setView(MUJ_CENTER, 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20, attribution: '© OpenStreetMap contributors' }).addTo(map);
+
+    // ---------- Places (your existing list) ----------
+    const PLACES = [
+      { id:'lib', name:'Dome', coords:[26.841533, 75.565805], type:'place', img: 'd.jpg', desc: '' },
+      { id:'quess', name:'Quess Mess', coords:[26.841265, 75.561594], type:'place', img: 'q.jpg', desc: '' },
+      { id:'hostel', name:'Hostel Block', coords:[26.8425,75.5665], type:'place', img: '', desc: '' },
+      { id:'cafeteria', name:'Cricket Ground', coords:[26.845449, 75.564185], type:'place', img: '', desc: '' },
+      { id:'lab', name:'Grand Stairs', coords:[26.842471, 75.565462], type:'place', img: 'n.jpg', desc: '' },
+      { id:'admin', name:'AB 3', coords:[26.843993, 75.56412], type:'place', img: '', desc: '' },
+      { id:'mentor1', name:'AB 1', coords:[26.84254,75.564442], type:'place', img: 'ab1.jpg', desc: '' },
+      { id:'mentor2', name:'Old Mess', coords:[26.843, 75.565365], type:'mentor', img: 'om.jpg', desc: '' },
+      { id: 'girls_hostel_b', name: 'Girls Hostel B', coords: [26.842429, 75.564989], type: 'place', img: 'Screenshot 2025-09-10 132615.png', desc: 'Near the east quad.'}
+    ];
+
+    // ---------- Layers & lookups ----------
+    const placesLayer = L.layerGroup().addTo(map);
+    const idToLayer = {}; // id -> layer (marker)
+    const nameIndex = []; // {id, nameLower}
+
+    // Add markers and populate selects
+    const startSel = document.getElementById('start');
+    const endSel = document.getElementById('end');
+
+    PLACES.forEach(p=>{
+      const popupHtml = `
+        <div class="cs-popup" style="width:230px;font-family:system-ui,Segoe UI,Roboto,Arial">
+          ${p.img ? `<img src="${p.img}" alt="${p.name} photo">` : ''}
+          <div style="font-weight:700;margin-bottom:6px">${p.name}</div>
+          ${p.desc ? `<div style="font-size:13px;color:#444">${p.desc}</div>` : ''}
+          <div style="margin-top:8px">
+            <button onclick="window.__setStart && window.__setStart('${p.id}')">Use as Start</button>
+            <button onclick="window.__setEnd && window.__setEnd('${p.id}')" style="margin-left:6px">Use as End</button>
+          </div>
+        </div>`;
+      const mk = L.marker(p.coords, { title: p.name }).addTo(placesLayer);
+      mk._placeId = p.id;
+      mk._props = p;
+      mk.bindPopup(popupHtml);
+      idToLayer[p.id] = mk;
+      nameIndex.push({ id: p.id, nameLower: (p.name + ' ' + (p.id||'')).toLowerCase() });
+      startSel.add(new Option(p.name, p.id));
+      endSel.add(new Option(p.name, p.id));
+    });
+
+    // ---------- Status helper ----------
+    const statusEl = document.getElementById('status');
+    function setStatus(s){ statusEl.innerText = 'Status: ' + s; }
+
+    // ---------- Geolocation & markers ----------
+    let userMarker = null, accuracyCircle = null, geoWatchId = null;
+    let startMarker = null, endMarker = null, routingControl = null, clickMode = null;
+
+    function createUserMarker(latlng, accuracy){
+      const icon = L.icon({ iconUrl:'https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png', iconSize:[21,34], iconAnchor:[10,34] });
+      if(userMarker) userMarker.setLatLng(latlng);
+      else {
+        userMarker = L.marker(latlng, { draggable:true, icon }).addTo(map).bindPopup('📍 You (drag to correct)').openPopup();
+        userMarker.on('dragend', ()=> {
+          const ll = userMarker.getLatLng();
+          setStatus(`Manual location: ${ll.lat.toFixed(6)}, ${ll.lng.toFixed(6)}`);
+        });
+      }
+      if(accuracy != null){
+        if(accuracyCircle) accuracyCircle.setLatLng(latlng).setRadius(accuracy);
+        else accuracyCircle = L.circle(latlng, { radius: accuracy, color:'#2b6cb0', fillOpacity:0.06 }).addTo(map);
+      }
+      map.setView(latlng, 18);
+      setStatus(`Location at ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)} (±${accuracy?Math.round(accuracy)+'m':'n/a'})`);
+    }
+
+    function fallbackToCampus(){
+      createUserMarker({lat:MUJ_CENTER[0], lng:MUJ_CENTER[1]}, null);
+      setStatus('Using MUJ campus as fallback. Click map to correct.');
+    }
+
+    function handleGeoError(err){
+      console.warn('geolocation error', err);
+      if(err && err.code === 1) setStatus('Permission denied. Allow location for better accuracy.');
+      else setStatus('Location unavailable.');
+      fallbackToCampus();
+    }
+
+    function requestLocationOnce(cb){
+      if(!('geolocation' in navigator)){ handleGeoError(); if(cb) cb(null); return; }
+      navigator.geolocation.getCurrentPosition(pos => { const ll = {lat:pos.coords.latitude,lng:pos.coords.longitude}; createUserMarker(ll, pos.coords.accuracy); if(cb) cb(ll); }, err=>{ handleGeoError(err); if(cb) cb(null); }, { enableHighAccuracy:true, timeout:12000, maximumAge:0 });
+    }
+    function startWatch(){ if(!('geolocation' in navigator)){ handleGeoError(); return; } if(geoWatchId!==null) navigator.geolocation.clearWatch(geoWatchId); geoWatchId = navigator.geolocation.watchPosition(p => createUserMarker({lat:p.coords.latitude,lng:p.coords.longitude}, p.coords.accuracy), err=> handleGeoError(err), { enableHighAccuracy:true, timeout:12000, maximumAge:1000 }); }
+    function stopWatch(){ if(geoWatchId!==null){ navigator.geolocation.clearWatch(geoWatchId); geoWatchId=null; } }
+
+    document.getElementById('locateBtn').addEventListener('click', ()=> { if(isMobile) startWatch(); else requestLocationOnce(); });
+
+    // ---------- Routing helper ----------
+    function drawRoute(startLatLng, endLatLng){
+      if(!startLatLng || !endLatLng){ alert('Both start and end required'); return; }
+      if(routingControl) { try { map.removeControl(routingControl); } catch(e){} routingControl = null; }
+      routingControl = L.Routing.control({
+        waypoints: [ L.latLng(startLatLng), L.latLng(endLatLng) ],
+        routeWhileDragging: false,
+        showAlternatives: false,
+        lineOptions: { styles: [{ color: '#f59e0b', weight: 6 }] },
+        createMarker(i, wp){ return L.marker(wp.latLng); }
+      }).addTo(map);
+      setStatus('Route displayed');
+    }
+
+    // ---------- Search / Autocomplete ----------
+    const input = document.getElementById('globalSearch');
+    const suggestionsEl = document.getElementById('suggestions');
+    let currentFocus = -1; // for keyboard nav
+
+    function clearSuggestions(){
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.style.display = 'none';
+      currentFocus = -1;
+    }
+
+    function showSuggestions(items){
+      if(!items || !items.length){ clearSuggestions(); return; }
+      suggestionsEl.innerHTML = '';
+      items.slice(0,10).forEach((it, i) => {
+        const div = document.createElement('div');
+        div.className = 'suggest-item';
+        div.dataset.id = it.id;
+        div.innerHTML = `<strong>${escapeHtml(it.name)}</strong><div style="font-size:12px;color:#6b7280">${escapeHtml(it.id)}</div>`;
+        div.addEventListener('click', ()=> {
+          handleSelection(it.id);
+        });
+        suggestionsEl.appendChild(div);
+      });
+      suggestionsEl.style.display = 'block';
+    }
+
+    function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+    function getMatches(query){
+      const q = (query||'').trim().toLowerCase();
+      if(!q) return [];
+      // coordinate single-case handled separately in input handler
+      const tokens = q.split(/\s+/).filter(Boolean);
+      // score matches: token presence in name/id -> basic rank
+      const scored = [];
+      nameIndex.forEach(it => {
+        let score = 0;
+        const txt = it.nameLower;
+        tokens.forEach(t => {
+          if(txt.indexOf(t) === 0) score += 20; // prefix boost
+          else if(txt.indexOf(t) !== -1) score += 10;
+        });
+        if(score>0) scored.push({ id: it.id, name: PLACES.find(p=>p.id===it.id).name, score });
+      });
+      scored.sort((a,b)=> b.score - a.score);
+      return scored;
+    }
+
+    // when user chooses a place: set as destination, open popup, and attempt route
+    function handleSelection(placeId){
+      clearSuggestions();
+      input.value = '';
+      // set destination select
+      endSel.value = placeId;
+      const layer = idToLayer[placeId];
+      if(layer){
+        // center and open popup
+        if(layer.getLatLng){
+          const ll = layer.getLatLng();
+          map.setView(ll, 18);
+          layer.openPopup && layer.openPopup();
+        } else if(layer.getBounds){
+          map.fitBounds(layer.getBounds(), { maxZoom: 18 });
+          layer.openPopup && layer.openPopup();
+        }
+      }
+      setStatus('Destination set: ' + (layer && (layer.options.title || placeId) || placeId));
+
+      // try to route automatically if possible
+      attemptRouteTo(placeId);
+    }
+
+    // Attempt to route from current Start -> destId
+    function attemptRouteTo(destId){
+      // resolve destination coordinates
+      const destLayer = idToLayer[destId];
+      if(!destLayer){ setStatus('Destination layer not found'); return; }
+      const destLatLng = destLayer.getLatLng ? destLayer.getLatLng() : destLayer.getBounds().getCenter();
+
+      // resolve start
+      const sVal = startSel.value;
+      if(sVal === 'myLocation'){
+        if(userMarker){
+          const userLL = userMarker.getLatLng();
+          drawRoute({lat:userLL.lat,lng:userLL.lng}, {lat:destLatLng.lat,lng:destLatLng.lng});
+        } else {
+          // request current position, then route
+          setStatus('Obtaining your current location to route...');
+          requestLocationOnce((pos)=>{
+            if(pos){
+              drawRoute({lat:pos.lat,lng:pos.lng}, {lat:destLatLng.lat,lng:destLatLng.lng});
+            } else {
+              setStatus('Could not get your location. Destination set but route not drawn.');
+            }
+          });
+        }
+      } else if(sVal){
+        // start is another place id
+        const startLayer = idToLayer[sVal];
+        if(startLayer){
+          const startLL = startLayer.getLatLng ? startLayer.getLatLng() : startLayer.getBounds().getCenter();
+          drawRoute({lat:startLL.lat,lng:startLL.lng}, {lat:destLatLng.lat,lng:destLatLng.lng});
+        } else {
+          setStatus('Start location layer not found. Destination set only.');
+        }
+      } else if(startMarker){
+        const sm = startMarker.getLatLng();
+        drawRoute({lat:sm.lat,lng:sm.lng}, {lat:destLatLng.lat,lng:destLatLng.lng});
+      } else {
+        // no start specified — just set destination
+        setStatus('Destination set; select a Start or use "Locate Me" to route.');
+      }
+    }
+
+    // keyboard navigation for suggestions
+    input.addEventListener('keydown', (e)=>{
+      const items = suggestionsEl.querySelectorAll('.suggest-item');
+      if(e.key === 'ArrowDown'){
+        e.preventDefault();
+        if(items.length === 0) return;
+        currentFocus = (currentFocus + 1) % items.length;
+        setActiveSuggestion(items);
+      } else if(e.key === 'ArrowUp'){
+        e.preventDefault();
+        if(items.length === 0) return;
+        currentFocus = (currentFocus - 1 + items.length) % items.length;
+        setActiveSuggestion(items);
+      } else if(e.key === 'Enter'){
+        e.preventDefault();
+        // if suggestions open and one is active -> select it; else if one match -> select; else treat as coordinates or name search selection
+        const active = suggestionsEl.querySelector('.suggest-item.active');
+        if(active && active.dataset && active.dataset.id){
+          handleSelection(active.dataset.id);
+          return;
+        }
+        // if only one suggestion, pick it
+        const all = suggestionsEl.querySelectorAll('.suggest-item');
+        if(all.length === 1){
+          handleSelection(all[0].dataset.id);
+          return;
+        }
+        // otherwise interpret input: check coords first, else try best match
+        const raw = input.value.trim();
+        // coords match
+        const coordMatch = raw.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/) || raw.match(/^(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)$/);
+        if(coordMatch){
+          const lat = parseFloat(coordMatch[1]), lng = parseFloat(coordMatch[2]);
+          if(!isNaN(lat) && !isNaN(lng)){
+            map.setView([lat,lng], 18);
+            clearSuggestions();
+            input.value = '';
+            // place a temporary marker
+            if(window._tempSearchMarker) map.removeLayer(window._tempSearchMarker);
+            window._tempSearchMarker = L.marker([lat,lng]).addTo(map).bindPopup(`Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`).openPopup();
+            setStatus('Jumped to coordinates');
+            return;
+          }
+        }
+        // fallback to best textual match
+        const matches = getMatches(raw);
+        if(matches.length > 0){
+          handleSelection(matches[0].id);
+        } else {
+          setStatus('No match found for "'+raw+'"');
+        }
+      } else if(e.key === 'Escape'){
+        clearSuggestions();
+      }
+    });
+
+    function setActiveSuggestion(items){
+      items.forEach(it => it.classList.remove('active'));
+      if(currentFocus >= 0 && items[currentFocus]) items[currentFocus].classList.add('active');
+      // ensure visible
+      if(items[currentFocus]) items[currentFocus].scrollIntoView({ block:'nearest' });
+    }
+
+    // update suggestions on input
+    let debounceTimer = null;
+    input.addEventListener('input', ()=>{
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(()=> {
+        const q = input.value.trim();
+        if(!q){ clearSuggestions(); return; }
+        // coords quick-detect: if coords, show single suggestion that is coordinates
+        const coordMatch = q.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/) || q.match(/^(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)$/);
+        if(coordMatch){
+          const lat = parseFloat(coordMatch[1]), lng = parseFloat(coordMatch[2]);
+          if(!isNaN(lat) && !isNaN(lng)){
+            showSuggestions([{id:'__coords__', name: `Go to ${lat.toFixed(6)}, ${lng.toFixed(6)}`}]);
+            // item click should set view — handle selection specially
+            const coordItem = suggestionsEl.querySelector('.suggest-item');
+            coordItem && coordItem.addEventListener('click', ()=> { map.setView([lat,lng],18); clearSuggestions(); input.value=''; if(window._tempSearchMarker) map.removeLayer(window._tempSearchMarker); window._tempSearchMarker = L.marker([lat,lng]).addTo(map).bindPopup(`Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`).openPopup(); setStatus('Jumped to coordinates'); });
+            return;
+          }
+        }
+        const matched = getMatches(q);
+        if(matched.length) showSuggestions(matched.map(m=>({id:m.id,name:m.name})));
+        else clearSuggestions();
+      }, 180);
+    });
+
+    // click outside -> hide suggestions
+    document.addEventListener('click', (e)=>{
+      if(!document.querySelector('.searchbar').contains(e.target)) clearSuggestions();
+    });
+
+    // ---------- existing UI wiring (setStart/setEnd/route/clear/swap/locate) ----------
+    document.getElementById('setStart').addEventListener('click', () => {
+      clickMode = clickMode === 'start' ? null : 'start';
+      setStatus(clickMode ? 'Click map to set Start' : 'Click mode off');
+      document.getElementById('setStart').style.background = clickMode === 'start' ? '#eef7ec' : '';
+      document.getElementById('setEnd').style.background = '';
+    });
+    document.getElementById('setEnd').addEventListener('click', () => {
+      clickMode = clickMode === 'end' ? null : 'end';
+      setStatus(clickMode ? 'Click map to set End' : 'Click mode off');
+      document.getElementById('setEnd').style.background = clickMode === 'end' ? '#ffecec' : '';
+      document.getElementById('setStart').style.background = '';
+    });
+
+    map.on('click', e => {
+      if(clickMode === 'start'){
+        if(startMarker) startMarker.setLatLng(e.latlng);
+        else startMarker = L.marker(e.latlng, { draggable:true }).addTo(map).bindPopup('Start').openPopup();
+        startSel.value = ''; // custom
+        clickMode = null;
+        setStatus('Start set by click');
+        document.getElementById('setStart').style.background = '';
+      } else if(clickMode === 'end'){
+        if(endMarker) endMarker.setLatLng(e.latlng);
+        else endMarker = L.marker(e.latlng, { draggable:true }).addTo(map).bindPopup('End').openPopup();
+        endSel.value = '';
+        clickMode = null;
+        setStatus('End set by click');
+        document.getElementById('setEnd').style.background = '';
+      }
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=> {
+      if(routingControl){ try { map.removeControl(routingControl); } catch(e){} routingControl=null; }
+      if(startMarker){ map.removeLayer(startMarker); startMarker=null; }
+      if(endMarker){ map.removeLayer(endMarker); endMarker=null; }
+      startSel.value = 'myLocation';
+      endSel.value = '';
+      setStatus('Cleared route & markers');
+    });
+
+    document.getElementById('swapBtn').addEventListener('click', ()=> {
+      const sv = startSel.value, ev = endSel.value;
+      startSel.value = ev || 'myLocation';
+      endSel.value = sv === 'myLocation' ? '' : sv;
+      setStatus('Start/end swapped');
+    });
+
+    window.__setStart = function(placeId){
+      const p = PLACES.find(x=>x.id===placeId);
+      if(!p) return;
+      startSel.value = placeId;
+      if(startMarker) startMarker.setLatLng(p.coords); else startMarker = L.marker(p.coords, { draggable:true }).addTo(map).bindPopup('Start').openPopup();
+      setStatus('Start set to ' + p.name);
+    };
+    window.__setEnd = function(placeId){
+      const p = PLACES.find(x=>x.id===placeId);
+      if(!p) return;
+      endSel.value = placeId;
+      if(endMarker) endMarker.setLatLng(p.coords); else endMarker = L.marker(p.coords, { draggable:true }).addTo(map).bindPopup('End').openPopup();
+      setStatus('End set to ' + p.name);
+    };
+
+    // route button resolves start/end similarly to attemptRouteTo logic
+    document.getElementById('routeBtn').addEventListener('click', ()=> {
+      const sVal = startSel.value;
+      const eVal = endSel.value;
+      // resolve start
+      let startPromise = new Promise((resolve,reject)=> {
+        if(sVal === 'myLocation'){
+          if(userMarker) resolve(userMarker.getLatLng());
+          else {
+            navigator.geolocation.getCurrentPosition(pos=> resolve({lat:pos.coords.latitude,lng:pos.coords.longitude}), err=> reject('no-user-location'), { enableHighAccuracy:true, timeout:10000 });
+          }
+        } else if(sVal){
+          const p = PLACES.find(x=>x.id===sVal); if(p) resolve({lat:p.coords[0],lng:p.coords[1]}); else { const l = idToLayer[sVal]; if(l) { const c = l.getLatLng ? l.getLatLng() : l.getBounds().getCenter(); resolve({lat:c.lat,lng:c.lng}); } else reject('unknown-start'); }
+        } else if(startMarker) resolve(startMarker.getLatLng());
+        else reject('no-start');
+      });
+
+      // resolve end
+      let endPromise = new Promise((resolve,reject)=> {
+        if(eVal){
+          const p = PLACES.find(x=>x.id===eVal); if(p) resolve({lat:p.coords[0],lng:p.coords[1]}); else { const l = idToLayer[eVal]; if(l){ const c = l.getLatLng ? l.getLatLng() : l.getBounds().getCenter(); resolve({lat:c.lat,lng:c.lng}); } else reject('unknown-end'); }
+        } else if(endMarker) resolve(endMarker.getLatLng());
+        else reject('no-end');
+      });
+
+      Promise.all([startPromise,endPromise]).then(vals=>{
+        const s = vals[0], e = vals[1];
+        if(startMarker) startMarker.setLatLng([s.lat,s.lng]); else startMarker = L.marker([s.lat,s.lng],{draggable:true}).addTo(map).bindPopup('Start');
+        if(endMarker) endMarker.setLatLng([e.lat,e.lng]); else endMarker = L.marker([e.lat,e.lng],{draggable:true}).addTo(map).bindPopup('End');
+        drawRoute(s,e);
+      }).catch(err=>{
+        setStatus('Could not resolve start/end: ' + err);
+        alert('Set both start and destination (dropdown or click)');
+      });
+    });
+
+    // handle ?loc=... query
+    (function handleQueryLocate(){
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const targetId = params.get('loc');
+        if(!targetId) return;
+        const loc = PLACES.find(p => p.id === targetId);
+        if(loc){
+          map.setView(loc.coords, 18);
+          const layer = idToLayer[targetId];
+          if(layer && layer.openPopup) setTimeout(()=> layer.openPopup(), 250);
+        }
+      } catch (e){ console.warn('loc query handling failed', e); }
+    })();
+
+    // initial locate strategy
+    function tryAutoLocate(){
+      if(!('permissions' in navigator)){
+        setStatus('Permissions API not supported — click Locate Me');
+        return;
+      }
+      navigator.permissions.query({name:'geolocation'}).then(res=>{
+        setStatus('Permission: ' + res.state);
+        if(res.state === 'granted') detectAndLocate();
+        else if(res.state === 'prompt') setStatus('Click "Locate Me" to trigger permission prompt.');
+        else { setStatus('Permission denied — set manually'); fallbackToCampus(); }
+        res.onchange = ()=> { setStatus('Permission changed: ' + res.state); if(res.state==='granted') detectAndLocate(); };
+      }).catch(()=> detectAndLocate());
+    }
+    function detectAndLocate(){ if(isMobile) startWatch(); else requestLocationOnce(); }
+    tryAutoLocate();
+
+    // autofocus search
+    setTimeout(()=> { try{ input.focus(); }catch(e){} }, 300);
+
+    // expose for debug
+    window.CampuSphere = { map, idToLayer, nameIndex, findMatches: (q)=>getMatches(q) };
+
+  })();
+  </script>
+</body>
+</html>
